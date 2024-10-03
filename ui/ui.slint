@@ -1,0 +1,23 @@
+import { Button, VerticalBox } from "std-widgets.slint";
+
+export component CalculatorApp inherits Window {
+    property <string> expression;
+    property <string> result;
+
+    callback calculate(string) -> string;
+
+    VerticalBox {
+        TextInput {
+            text: expression;
+        }
+        Button {
+            text: "Calculate";
+            clicked => {
+                result = root.calculate(expression);
+            }
+        }
+        TextInput {
+            text: result;
+        }
+    }
+}

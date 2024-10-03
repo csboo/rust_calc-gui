@@ -1,22 +1,19 @@
-// Prevent console window in addition to Slint window in Windows release builds when, e.g., starting the app via file manager. Ignored on other platforms.
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+mod calculator;
 
-use std::error::Error;
+use calculator::Calculator;
+use slint::SharedString;
 
 slint::include_modules!();
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let ui = AppWindow::new()?;
+fn main() {
+    let app = CalculatorApp::new().expect("new app failed");
+    let calculator = Calculator::new();
 
-    ui.on_request_increase_value({
-        let ui_handle = ui.as_weak();
-        move || {
-            let ui = ui_handle.unwrap();
-            ui.set_counter(ui.get_counter() + 1);
-        }
+    // Handle the `calculate` callback
+    app.on_calculate(move |expr: SharedString| {
+        let result = calculator.calculate(&expr);
+        SharedString::from(format!("{}", result))
     });
 
-    ui.run()?;
-
-    Ok(())
+    app.run().expect("run failed"); // Start the Slint application
 }
