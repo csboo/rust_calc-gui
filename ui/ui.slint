@@ -1,23 +1,107 @@
-import { Button, VerticalBox } from "std-widgets.slint";
+import { GridBox, HorizontalBox, VerticalBox, TabWidget } from "std-widgets.slint";
+
+export global Logic {
+    callback button_pressed(string);
+    callback calculate(string) -> string;
+}
+
+component Button {
+    in property <string> text;
+    property <length> size;
+    
+    Rectangle {
+        background: ta.pressed ? #525252.darker(60%) : ta.has-hover ? #525252.darker(30%) : #525252;
+        animate background {
+            duration: 100ms;
+        }
+        min-width: 30px;
+        max-width: 60px;
+        min-height: 20px;
+        max-height: 50px;
+        border-radius: 4px;
+        ta := TouchArea {
+            clicked => { Logic.button_pressed(root.text); }
+        }
+    }
+    Text {
+        color: white;
+        font-weight: 400;
+        font-size: 20px;
+        text: root.text;
+    }
+}
+
+component SendButton {
+    in property <string> text;
+    in-out property <string> expr;
+
+    Rectangle {
+        background: ta.pressed ? #525252.darker(60%) : ta.has-hover ? #525252.darker(30%) : #525252;
+        animate background {
+            duration: 100ms;
+        }
+        min-width: 30px;
+        max-width: 60px;
+        min-height: 20px;
+        max-height: 50px;
+        border-radius: 4px;
+        ta := TouchArea {
+            clicked => { expr = Logic.calculate(expr) }
+        }
+    }
+    Text {
+        color: white;
+        font-weight: 400;
+        font-size: 20px;
+        text: root.text;
+    }
+}
 
 export component CalculatorApp inherits Window {
-    property <string> expression;
-    property <string> result;
-
-    callback calculate(string) -> string;
+    in-out property <string> expression;
 
     VerticalBox {
         TextInput {
-            text: expression;
-        }
-        Button {
-            text: "Calculate";
-            clicked => {
-                result = root.calculate(expression);
+            font-size: 20px;
+            text <=> expression;
+            horizontal-alignment: right;
+            vertical-alignment: bottom;
+            
+            accepted => {
+                expression = Logic.calculate(self.text);
             }
         }
-        TextInput {
-            text: result;
+        
+        GridBox {
+            padding: 0px;
+            spacing: 3px;
+            Row {
+                Button { text: "7"; }
+                Button { text: "8"; }
+                Button { text: "9"; }
+                Button { text: "*"; }
+            }
+            Row {
+                Button { text: "4"; }
+                Button { text: "5"; }
+                Button { text: "6"; }
+                Button { text: "-"; }
+            }
+            Row {
+                Button { text: "1"; }
+                Button { text: "2"; }
+                Button { text: "3"; }
+                Button { text: "+"; }
+            }
+            Row {
+                Button { text: "+/-"; }
+                Button { text: "0"; }
+                Button { text: "."; }
+                SendButton { 
+                    text: "="; 
+                    expr <=> expression;
+                }
+            }
         }
     }
 }

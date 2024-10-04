@@ -1,0 +1,71 @@
+import { HorizontalBox, VerticalBox, GridBox } from "std-widgets.slint";
+
+export global Logic {
+    callback button-pressed(string);
+}
+
+component Button {
+    in property <string> text;
+    property <length> size;
+    
+    Rectangle {
+        background: ta.pressed ? #525252.darker(60%) : ta.has-hover ? #525252.darker(30%) : #525252;
+        animate background {
+            duration: 100ms;
+        }
+        min-width: 30px;
+        max-width: 60px;
+        min-height: 20px;
+        max-height: 50px;
+        border-radius: 4px;
+        ta := TouchArea {
+            clicked => { Logic.button-pressed(root.text); }
+        }
+    }
+    Text {
+        color: white;
+        font-weight: 400;
+        font-size: 20px;
+        text: root.text;
+    }
+}
+
+export component CalculatorApp inherits Window {
+    accessible-role: AccessibleRole.none;
+    property <string> expression;
+    property <string> result;
+
+    callback calculate(string) -> string;
+
+    VerticalBox {
+        TextInput {
+            font-size: 20px;
+            text <=> expression;
+            horizontal-alignment: right;
+            vertical-alignment: bottom;
+            
+            accepted => {
+                expression = root.calculate(self.text);
+            }
+        }
+        
+        GridBox {
+            padding: 0px;
+            spacing: 3px;
+            Row {
+                Button {
+                    text: "7";
+                }
+                Button {
+                    text: "8";
+                }
+                Button {
+                    text: "9";
+                }
+                Button {
+                    text: "*";
+                }
+            }
+        }
+    }
+}

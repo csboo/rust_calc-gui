@@ -5,14 +5,14 @@ pub struct Calculator {
 }
 
 impl Calculator {
-    pub fn new() -> Self {
+    pub fn new() -> Option<Self> {
         let mut precedence = HashMap::new();
         precedence.insert('+', (1, false)); // left-associative
         precedence.insert('-', (1, false));
         precedence.insert('*', (2, false));
         precedence.insert('/', (2, false));
         precedence.insert('^', (3, true)); // right-associative
-        Self { precedence }
+        Some(Self { precedence })
     }
 
     fn tokenize(&self, expr: &str) -> Vec<String> {
